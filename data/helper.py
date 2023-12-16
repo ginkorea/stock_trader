@@ -7,5 +7,4 @@ class TickerList:
         self.df = pd.read_csv(file)
         self.tickers = self.df['Symbol']
         self.names = self.df['Name']
-        self.dict = zip(self.tickers, self.names)
-
+        self.dict = dict(zip(self.tickers, self.names))

@@ -1,8 +1,5 @@
-from dash_app import start
-from data.helper import TickerList
+from dash_app import StockDashboardApp
 
-tick = TickerList()
-print(tick.tickers)
-print(tick.names)
-print(tick.dict)
-
+if __name__ == '__main__':
+    app = StockDashboardApp()
+    app.run()
