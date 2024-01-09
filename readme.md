@@ -1,3 +1,3 @@
 # Stock Trader App
-## By [**GinKorea**](github.com/GinKorea)
+## By [**GinKorea**](https://github.com/GinKorea)
 
