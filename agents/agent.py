@@ -10,5 +10,3 @@ class Agent:
         self.all_tickers = self.clients.trading_client.get_all_assets()
         self.account = self.clients.trading_client.get_account()
 
-agent_alice = Agent()
-print(f"Agent {agent_alice.name} has account number {agent_alice.account}")
