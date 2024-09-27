@@ -3,12 +3,13 @@ from sympy import divisors
 
 # Helper function to find the least common divisor and pad if necessary
 def find_best_head_size(input_size):
-    # Try common divisors starting from an ideal 64
+    # Try common even divisors starting from an ideal 64
     for divisor in range(64, 1, -1):
-        if input_size % divisor == 0:
+        if input_size % divisor == 0 and divisor % 2 == 0:  # Ensure it's even
             return divisor
-    # If no suitable divisor is found, default to 1 head (not ideal but valid)
-    return 1
+    # If no suitable even divisor is found, default to 2 heads
+    return 2
+
 
 # Function to pad the input if the size is not ideal
 def pad_input(x, input_size):

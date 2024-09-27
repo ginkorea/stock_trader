@@ -1,7 +1,6 @@
 import torch
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
-import numpy as np
 
 class Trainer:
     def __init__(self, model, learning_rate, batch_size, epochs, model_save_path, weight_decay=1e-5, noise_std=0.01):
@@ -16,17 +15,17 @@ class Trainer:
 
         self.model.to(self.device)
         self.optimizer = optim.Adam(self.model.parameters(), lr=self.learning_rate, weight_decay=self.weight_decay)
-        self.criterion = torch.nn.MSELoss()  # Changed to MSELoss for regression tasks
+        self.criterion = torch.nn.MSELoss()  # MSELoss for regression tasks
 
     def add_noise(self, X):
-        """ Adds Gaussian noise to the input data """
+        """ Adds Gaussian noise to the input data (optional). """
         noise = torch.randn(X.size()).to(self.device) * self.noise_std
         return X + noise
 
     def train(self, X, y):
-        # Convert to appropriate tensor types
+        """ Trains the model using the provided input (X) and target (y) data. """
         X = torch.tensor(X, dtype=torch.float32).to(self.device)
-        y = torch.tensor(y, dtype=torch.float32).to(self.device)  # Use float type for regression targets
+        y = torch.tensor(y, dtype=torch.float32).to(self.device)  # Float type for regression
 
         dataset = TensorDataset(X, y)
         data_loader = DataLoader(dataset, batch_size=self.batch_size, shuffle=True)
@@ -40,7 +39,7 @@ class Trainer:
             for batch_X, batch_y in data_loader:
                 self.optimizer.zero_grad()
 
-                # Add noise to the input batch
+                # Optionally add noise to input for regularization
                 noisy_batch_X = self.add_noise(batch_X)
 
                 output = self.model(noisy_batch_X)
@@ -53,7 +52,7 @@ class Trainer:
 
             print(f"Epoch [{epoch+1}/{self.epochs}], Loss: {avg_epoch_loss:.4f}")
 
-            # Early stopping
+            # Early stopping logic
             if avg_epoch_loss < best_loss:
                 best_loss = avg_epoch_loss
                 counter = 0
