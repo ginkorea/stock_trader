@@ -1,7 +1,6 @@
 import numpy as np
 from utils.model_size import find_best_head_size, pad_input
 
-
 class StockDataProcessor:
     def __init__(self, window_size, pred_days):
         self.window_size = window_size
@@ -10,6 +9,7 @@ class StockDataProcessor:
     def preprocess(self, stock_data, tickers):
         # Assuming 'stock_data' contains rows with 'symbol', 'timestamp', 'open', 'high', and other features
         all_features = []
+        print(stock_data.head(), stock_data.columns)
 
         # Sort by date for proper sequencing
         stock_data = stock_data.sort_values('timestamp')
@@ -59,6 +59,10 @@ class StockDataProcessor:
         X = np.array(X)
         y = np.array(y)
 
+        # Check for valid sequences
+        if X.shape[0] == 0:
+            raise ValueError("No valid sequences found during preprocessing.")
+
         # Determine input size before padding
         input_size = X.shape[-1]
 
@@ -66,11 +70,11 @@ class StockDataProcessor:
         num_heads = find_best_head_size(input_size)
 
         # Ensure hidden_dim is divisible by num_heads, adjust if necessary
-        hidden_dim = input_size * 4
+        hidden_dim = input_size * 2
         if hidden_dim % num_heads != 0:
             padding_size = num_heads - (hidden_dim % num_heads)
             X_padded, new_input_size = pad_input(X, input_size + padding_size)
-            hidden_dim = new_input_size * 4  # Update hidden_dim after padding
+            hidden_dim = new_input_size * 2  # Update hidden_dim after padding
         else:
             X_padded, new_input_size = X, input_size  # No padding needed
 

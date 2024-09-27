@@ -25,8 +25,8 @@ def verify_labels(y):
     y_list = y.tolist() if isinstance(y, np.ndarray) else y
     y_flat = np.array(y_list).flatten()
     unique_labels = set(y_flat)
-    print(f"Unique labels: {unique_labels}")
-
+    unique_labels_list = list(unique_labels)
+    print(f"Unique labels head: {unique_labels_list[:5]}{'...' if len(unique_labels_list) > 5 else ''}")
     if len(unique_labels) <= 1:
         raise ValueError("There is an issue with the target labels: Only one or zero unique values found.")
     else:
