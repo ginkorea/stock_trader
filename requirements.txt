@@ -6,3 +6,4 @@ dash~=2.18.1
 dash-bootstrap-components~=1.6.0
 numpy~=2.1.1
 torch~=2.4.1
+sympy~=1.13.3

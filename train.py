@@ -1,30 +1,32 @@
-# main.py
-from connection.client import APIConnection
-from data.fetcher import StockDataFetcher
-from data.processor import StockDataProcessor
-from transformer.model import TransformerModel
 from transformer.trainer import Trainer
+from transformer.model import TransformerModel
+from utils.model_size import find_best_head_size, pad_input, verify_labels
+from data.processor import StockDataProcessor
+from data.fetcher import StockDataFetcher
+from data.tickers import tickers as tick  # Import the list of tickers
+from connection.client import APIConnection
 
-# Step 1: Initialize Alpaca API Connection
-api_connection = APIConnection(is_paper=True)
 
-# Step 2: Fetch stock data using StockDataFetcher
-data_fetcher = StockDataFetcher(api_connection, start_date="2020-01-01", end_date="2023-01-01")
-ticker_data = data_fetcher.fetch_data('AAPL')  # Fetch data for a single stock (OHLCV)
+# Initialize the API connection (assuming it's available as an import or in the environment)
+api_connection = APIConnection()
+tickers = tick  # List of tickers to fetch data for
 
-# Step 3: Preprocess the data (with all features)
-data_processor = StockDataProcessor(window_size=30, pred_days=3)
-X, y = data_processor.preprocess(ticker_data)  # X will now include OHLCV features
+# Fetch stock data for all tickers
+data_fetcher = StockDataFetcher(api_connection, start_date="2022-01-01", end_date="2023-01-01")
+stock_data = data_fetcher.fetch_data(tickers)
 
-# Step 4: Initialize the Transformer model (with input_size=5 for OHLCV)
-model = TransformerModel(input_size=5, num_heads=2, num_layers=3, hidden_dim=64, output_dim=3)
+# Preprocess the data to create long vectors per day, pad, and calculate input size
+data_processor = StockDataProcessor(window_size=30, pred_days=1)  # Only predicting the next day high
+X, y, tickers, input_size, num_heads, hidden_dim = data_processor.preprocess(stock_data, tickers)
 
-# Step 5: Train the model
-trainer = Trainer(model=model, learning_rate=0.001, batch_size=32, epochs=50)
+# Initialize the Transformer model
+model = TransformerModel(input_size=input_size, num_heads=num_heads, num_layers=6, hidden_dim=hidden_dim, num_tickers=len(tickers))
+
+# Initialize the trainer
+trainer = Trainer(model=model, learning_rate=0.001, batch_size=32, epochs=50, model_save_path="stock_model.pth")
+
+# Verify the labels
+verify_labels(y)
+
+# Train the model
 trainer.train(X, y)
-
-# Step 6: Make predictions
-test_data = data_fetcher.fetch_data('AAPL')  # Fetch new data for predictions
-X_test, _ = data_processor.preprocess(test_data)
-predictions = trainer.predict(X_test)
-print(predictions)
