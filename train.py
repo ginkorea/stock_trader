@@ -3,7 +3,7 @@ from transformer.model import TransformerModel
 from utils.model_size import verify_labels
 from data.processor import StockDataProcessor
 from data.fetcher import StockDataFetcher
-from data.tickers import tickers_250 as tick  # Import the list of tickers
+from data.tickers import tickers as tick  # Import the list of tickers
 from connection.client import APIConnection
 
 
